@@ -1,6 +1,4 @@
-# Contentful App Vue Starter
-
-This template should help get you started developing an app for Contentful with Vue 3 in Vite.
+# Contentful Recursive Path
 
 ## How to use
 
