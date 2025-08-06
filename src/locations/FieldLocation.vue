@@ -1,0 +1,12 @@
+<template>
+  <div>
+    Hello Field (AppId {{ sdk.ids.app }})
+    <pre>{{ sdk }}</pre>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { FieldAppSDK } from "@contentful/app-sdk";
+
+defineProps<{ sdk: FieldAppSDK }>();
+</script>
