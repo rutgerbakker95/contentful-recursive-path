@@ -1,29 +1,34 @@
 <template>
   <div class="path-field">
     <div class="field-info">
-      <h3>Path Generator</h3>
       <p v-if="isGenerating" class="status">Generating path...</p>
       <p v-else-if="error" class="status error">{{ error }}</p>
       <p v-else class="status success">
-        Path: {{ currentPath || "No path generated" }}
+        {{ currentPath || "No path generated" }}
       </p>
     </div>
 
-    <div class="debug-info" v-if="debugMode">
-      <h4>Debug Information</h4>
-      <div><strong>Current Slug:</strong> {{ currentSlug || "Not set" }}</div>
-      <div><strong>Parent ID:</strong> {{ parentId || "No parent" }}</div>
-      <div><strong>Generated Path:</strong> {{ currentPath || "None" }}</div>
-    </div>
+    <template v-if="sdk.user.spaceMembership.admin">
+      <div class="debug-info" v-if="debugMode">
+        <h4>Debug Information</h4>
+        <div><strong>Current Slug:</strong> {{ currentSlug || "Not set" }}</div>
+        <div><strong>Parent ID:</strong> {{ parentId || "No parent" }}</div>
+        <div><strong>Generated Path:</strong> {{ currentPath || "None" }}</div>
+      </div>
 
-    <button @click="debugMode = !debugMode" class="debug-toggle">
-      {{ debugMode ? "Hide" : "Show" }} Debug Info
-    </button>
+      <button
+        type="button"
+        @click="debugMode = !debugMode"
+        class="debug-toggle"
+      >
+        {{ debugMode ? "Hide" : "Show" }} Debug Info
+      </button>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import type { FieldAppSDK } from "@contentful/app-sdk";
 
 const props = defineProps<{ sdk: FieldAppSDK }>();
@@ -220,27 +225,29 @@ onMounted(async () => {
     console.error("Initialization error:", err);
   }
 });
+
+// Watch the debugMode var
+watch(debugMode, async () => {
+  await nextTick();
+  props.sdk.window.updateHeight();
+});
 </script>
 
-<style scoped>
-.path-field {
-  padding: 16px;
+<style>
+body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     sans-serif;
+  margin: 0;
+  padding: 0;
 }
+</style>
 
-.field-info h3 {
-  margin: 0 0 12px 0;
-  color: #2c5aa0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
+<style scoped>
 .status {
-  margin: 8px 0;
   padding: 8px 12px;
   border-radius: 4px;
   font-size: 14px;
+  user-select: none;
 }
 
 .status.success {
@@ -287,5 +294,9 @@ onMounted(async () => {
 
 .debug-toggle:hover {
   background-color: #f7fafc;
+}
+
+p {
+  margin: 0;
 }
 </style>
